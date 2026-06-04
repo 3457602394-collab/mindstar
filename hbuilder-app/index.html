@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>AI 智能心灵伙伴</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #05020a;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* 加载遮罩层 */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(160deg, #05020a 0%, #0d0a1a 40%, #120822 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease-out;
+        }
+
+        #splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #splash-screen .splash-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #f97316, #ec4899, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 24px;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.3), 0 0 40px rgba(236, 72, 153, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(249, 115, 22, 0.5), 0 0 80px rgba(236, 72, 153, 0.4); }
+        }
+
+        #splash-screen .splash-title {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-align: center;
+        }
+
+        #splash-screen .splash-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            margin-top: 8px;
+            letter-spacing: 0.1em;
+        }
+
+        #splash-screen .splash-loader {
+            margin-top: 32px;
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-top-color: rgba(249, 115, 22, 0.8);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 网络错误提示 */
+        #error-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(160deg, #05020a 0%, #0d0a1a 40%, #120822 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            color: white;
+            text-align: center;
+            padding: 32px;
+        }
+
+        #error-screen.show {
+            display: flex;
+        }
+
+        #error-screen .error-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+        }
+
+        #error-screen .error-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        #error-screen .error-desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        #error-screen .retry-btn {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #f97316, #ec4899);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.05em;
+        }
+
+        #error-screen .retry-btn:active {
+            opacity: 0.8;
+            transform: scale(0.97);
+        }
+
+        /* WebView 容器 */
+        #webview-container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 启动画面 -->
+    <div id="splash-screen">
+        <div class="splash-icon">心</div>
+        <div class="splash-title">AI 智能心灵伙伴</div>
+        <div class="splash-subtitle">温暖守护你的心灵港湾</div>
+        <div class="splash-loader"></div>
+    </div>
+
+    <!-- 网络错误提示 -->
+    <div id="error-screen">
+        <div class="error-icon">🌐</div>
+        <div class="error-title">无法连接到心灵港湾</div>
+        <div class="error-desc">
+            请检查你的网络连接<br>
+            确保已连接到互联网后重试
+        </div>
+        <button class="retry-btn" onclick="location.reload()">重新连接</button>
+    </div>
+
+    <script type="text/javascript">
+        // ============================================
+        // 配置区域 - 修改为你的 Railway 部署地址
+        // ============================================
+
+        // 方式一：远程部署地址（推荐先部署到 Railway）
+        var REMOTE_URL = 'https://你的应用.railway.app';
+
+        // 方式二：如果需要本地测试，取消注释下面这行
+        // var REMOTE_URL = 'http://192.168.1.xxx:3000';  // 替换为你的局域网IP
+
+
+        // ============================================
+        // 应用初始化逻辑
+        // ============================================
+        (function() {
+            var splashScreen = document.getElementById('splash-screen');
+            var errorScreen = document.getElementById('error-screen');
+
+            // 检查是否在 5+ Runtime 环境中
+            function isPlusEnv() {
+                return typeof window.plus !== 'undefined';
+            }
+
+            // 创建 WebView 加载远程应用
+            function loadRemoteApp(url) {
+                if (isPlusEnv()) {
+                    // 使用 5+ Runtime 的 WebView
+                    plusReady(url);
+                } else {
+                    // 浏览器环境下直接跳转
+                    window.location.href = url;
+                }
+            }
+
+            // 5+ Runtime 就绪后执行
+            function plusReady(url) {
+                // 获取当前 WebView
+                var ws = plus.webview.currentWebview();
+
+                // 创建一个新的 WebView 来加载远程应用（全屏）
+                var webview = plus.webview.create(url, 'main-webview', {
+                    top: '0px',
+                    bottom: '0px',
+                    left: '0px',
+                    right: '0px',
+                    scalable: true,
+                    bounce: 'vertical',
+                    bounceBackground: '#05020a',
+                    progress: { color: '#f97316' },
+                    hardwareAccelerated: true,
+                    kernel: 'X5'  // Android 上优先使用 X5 内核
+                });
+
+                // WebView 加载完成后隐藏启动画面
+                webview.addEventListener('loaded', function() {
+                    setTimeout(function() {
+                        splashScreen.classList.add('hidden');
+                    }, 500);
+                });
+
+                // WebView 加载失败时显示错误页
+                webview.addEventListener('error', function() {
+                    splashScreen.classList.add('hidden');
+                    errorScreen.classList.add('show');
+                });
+
+                // 将远程 WebView 显示到当前窗口中
+                ws.append(webview);
+
+                // 超时处理：10秒后仍未加载完成则隐藏启动画面
+                setTimeout(function() {
+                    if (!splashScreen.classList.contains('hidden')) {
+                        splashScreen.classList.add('hidden');
+                    }
+                }, 12000);
+            }
+
+            // HTML5+ 环境下的初始化
+            if (isPlusEnv()) {
+                document.addEventListener('plusready', function() {
+                    loadRemoteApp(REMOTE_URL);
+                }, false);
+            } else {
+                // 非 5+ 环境（如浏览器中调试），延迟加载展示启动画面
+                setTimeout(function() {
+                    loadRemoteApp(REMOTE_URL);
+                }, 2000);
+            }
+
+            // 错误处理
+            window.addEventListener('error', function(e) {
+                console.error('Global error:', e);
+            });
+
+        })();
+    </script>
+
+</body>
+</html>

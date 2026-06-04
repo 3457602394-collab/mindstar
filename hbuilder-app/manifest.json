@@ -1,0 +1,84 @@
+{
+    "@platforms": ["Android", "iPhone"],
+    "id": "com.soulcompanion.ai",
+    "name": "AI智能心灵伙伴",
+    "version": {
+        "name": "1.0.0",
+        "code": "100"
+    },
+    "description": "AI智能心灵伙伴 - 温暖守护你的心灵港湾",
+    "developer": {
+        "name": "Soul Companion Team"
+    },
+    "permissions": {
+        "Audio": {
+            "description": "用于播放治愈音乐"
+        },
+        "Vibrate": {
+            "description": "用于消息提醒"
+        }
+    },
+    "plus": {
+        "splashscreen": {
+            "autoclose": true,
+            "waiting": true,
+            "delay": 1500
+        },
+        "statusbar": {
+            "immersed": "supportedDevice",
+            "style": "dark"
+        },
+        "popGesture": "close",
+        "runmode": "liberate",
+        "signature": "Skip",
+        "distribute": {
+            "android": {
+                "packagename": "com.soulcompanion.ai",
+                "keystore": "",
+                "alias": "",
+                "password": "",
+                "aliasPassword": "",
+                "minSdkVersion": "21",
+                "targetSdkVersion": "30",
+                "abiFilters": ["armeabi-v7a", "arm64-v8a", "x86"],
+                "permissionExternalStorage": {
+                    "request": "none",
+                    "prompt": ""
+                },
+                "permissionPhoneState": {
+                    "request": "none",
+                    "prompt": ""
+                }
+            },
+            "ios": {
+                "appid": "",
+                "mobileprovision": "",
+                "p12": "",
+                "password": "",
+                "devices": "iphone",
+                "minSdkVersion": "11.0",
+                "privacyDescription": {
+                    "NSMicrophoneUsageDescription": "用于语音交流"
+                }
+            },
+            "sdkConfigs": {}
+        },
+        "useragent": {
+            "value": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+            "concatenate": false
+        },
+        "kernel": {
+            "ios": "WKWebview",
+            "android": "X5"
+        }
+    },
+    "icons": {
+        "72": "icon/72x72.png",
+        "96": "icon/96x96.png",
+        "120": "icon/120x120.png",
+        "144": "icon/144x144.png",
+        "180": "icon/180x180.png",
+        "1024": "icon/1024x1024.png"
+    },
+    "launch_path": "index.html"
+}

@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: ai-soul-companion
+    env: node
+    region: singapore  # 新加坡节点，国内访问较快
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: node dist/server.cjs
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: QWEN_API_KEY
+        sync: false  # 手动在 Render Dashboard 设置，避免泄露
+      - key: QWEN_API_BASE
+        sync: false
