@@ -1,0 +1,6 @@
+{
+  "name": "AI智能心灵伙伴",
+  "description": "AI智能体创新设计 - 您的专属情感倾听者、思想交流者、创意启发库与自然疗愈师。通过多维数字生命形态、智能情绪气象站、心灵树洞与呼吸疗愈区，开启温暖的心灵奇遇。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_AI_API"]
+}
