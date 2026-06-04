@@ -738,6 +738,17 @@ async function startServer() {
     res.json({ status: 'ok', service: 'AI Soul Companion' });
   });
 
+  // DEBUG: show env vars (remove after fix)
+  app.get('/api/debug', (req, res) => {
+    res.json({
+      hasKey: !!process.env.QWEN_API_KEY,
+      keyPrefix: (process.env.QWEN_API_KEY || '').slice(0, 10),
+      hasBase: !!process.env.QWEN_API_BASE,
+      baseVal: process.env.QWEN_API_BASE || 'NOT SET',
+      allKeys: Object.keys(process.env).filter(k => k.includes('QWEN') || k.includes('KEY') || k.includes('API')),
+    });
+  });
+
   // LLM Status endpoint
   app.get('/api/llm-status', (req, res) => {
     try {
