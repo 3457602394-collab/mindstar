@@ -10,12 +10,8 @@ dotenv.config();
 // AI CONFIG - Qwen/Qwen3.6-27B Only
 // ==========================================
 function getQWENConfig() {
-  const apiKey = process.env.QWEN_API_KEY;
+  const apiKey = process.env.QWEN_API_KEY || "sk-onwenedbzbnyymllvpgzndmoplqufyjvnieotrnalwwiajec";
   const apiBase = process.env.QWEN_API_BASE || "https://api.siliconflow.cn/v1";
-
-  if (!apiKey) {
-    throw new Error('QWEN_API_KEY environment variable is required. Please set it in the .env file.');
-  }
 
   // Sanitize trailing slashes from API Base
   let base = apiBase;
@@ -736,17 +732,6 @@ async function startServer() {
   // Health check endpoint
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', service: 'AI Soul Companion' });
-  });
-
-  // DEBUG: show env vars (remove after fix)
-  app.get('/api/debug', (req, res) => {
-    res.json({
-      hasKey: !!process.env.QWEN_API_KEY,
-      keyPrefix: (process.env.QWEN_API_KEY || '').slice(0, 10),
-      hasBase: !!process.env.QWEN_API_BASE,
-      baseVal: process.env.QWEN_API_BASE || 'NOT SET',
-      allKeys: Object.keys(process.env).filter(k => k.includes('QWEN') || k.includes('KEY') || k.includes('API')),
-    });
   });
 
   // LLM Status endpoint
